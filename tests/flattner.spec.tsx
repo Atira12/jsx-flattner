@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren } from "react";
+import { FC, PropsWithChildren, createContext } from "react";
 import { FlatProvider } from "../lib/flattner";
 import { DetailedFlatComponent } from "../lib/types";
 
@@ -13,7 +13,17 @@ const SecondProvider: FC<PropsWithChildren> = ({ children }) => (
 const ThirdProvider: FC<PropsWithChildren> = ({ children }) => (
   <span>{children}</span>
 );
-
+const ActualContext = createContext({});
+const ActualProvider: FC<PropsWithChildren & { value: unknown }> = ({
+  children,
+  value,
+}) => {
+  return (
+    <ActualContext.Provider value={{ value }}>
+      {children}
+    </ActualContext.Provider>
+  );
+};
 const detailedComponent: DetailedFlatComponent = {
   element: <TestProvider />,
   enabled: () => true,
@@ -92,5 +102,32 @@ describe("FlatProvider tests", () => {
 
     expect(component).not.toBeNull();
     expect(component).toEqual(expected);
+  });
+  it("when using detailed providers , enable function should have all previous contexts", () => {
+    let value;
+    const component = FlatProvider({
+      elements: [
+        <ActualProvider value={1} />,
+        <SecondProvider />,
+        {
+          element: <TestProvider />,
+          context: ActualContext,
+          enabled: (context) => {
+            value = context;
+            return true;
+          },
+        },
+      ],
+    });
+    const expected = (
+      <TestProvider>
+        <SecondProvider />
+      </TestProvider>
+    );
+
+    expect(component).not.toBeNull();
+    expect(component).toEqual(expected);
+    expect(value).not.toBeNull();
+    expect(value).toEqual({ value: 1 });
   });
 });
