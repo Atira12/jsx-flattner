@@ -1,0 +1,17 @@
+name: Build & Test
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on:
+  push:
+    branches:
+      - "main"
+
+  pull_request:
+
+jobs:
+  Build-and-Test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm run test
+      - run: npm run build

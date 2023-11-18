@@ -1,7 +1,10 @@
 {
   "name": "flattner",
+  "version": "0.0.1",
   "scripts": {
-    "test": "node --experimental-vm-modules ./node_modules/.bin/jest"
+    "test": "node --experimental-vm-modules ./node_modules/.bin/jest",
+    "build": "tsc -p tsconfig.build.json && cp package.json ./dist",
+    "pack": "npm pack ./dist "
   },
   "devDependencies": {
     "@octokit/types": "^12.0.0",
