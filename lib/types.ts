@@ -6,6 +6,7 @@ export interface DetailedFlatComponent {
   context?: Context<unknown>;
 }
 export type FlatComponent = ReactElement | DetailedFlatComponent;
+
 export type FlatProviderPropsInterface = PropsWithChildren & {
   elements: FlatComponent[];
 };
