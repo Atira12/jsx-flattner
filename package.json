@@ -1,6 +1,6 @@
 {
   "name": "flattner",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "scripts": {
     "test": "node --experimental-vm-modules ./node_modules/.bin/jest",
     "build": "tsc -p tsconfig.build.json && cp package.json ./dist",
