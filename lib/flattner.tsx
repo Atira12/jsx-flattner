@@ -9,24 +9,38 @@ import {
 } from "react";
 import { DetailedFlatComponent, FlatProviderPropsInterface } from "./types";
 
-const FlatDetailedWrapperComponent: FC<
-  PropsWithChildren & { component: DetailedFlatComponent }
+export const FlatDetailedContextWrapperComponent: FC<
+  PropsWithChildren & { component: Required<DetailedFlatComponent> }
 > = ({ component, children }) => {
   const { element, context, enabled } = component;
 
-  return enabled() ? cloneElement(element, {}, children) : <Fragment />;
+  const contextValue = useContext(context);
+  return enabled(contextValue) ? cloneElement(element, {}, children) : children;
+};
+
+export const FlatDetailedWrapperComponent: FC<
+  PropsWithChildren & { component: Omit<DetailedFlatComponent, "context"> }
+> = ({ component, children }) => {
+  const { element, enabled } = component;
+
+  return enabled() ? cloneElement(element, {}, children) : children;
 };
 
 export const FlatProvider: FC<FlatProviderPropsInterface> = ({
   children,
   elements,
 }) => {
-  let StructureNode: ReactElement;
-  let InnerNode: ReactElement;
-
-  const transformedElements = elements.map((element) => {
+  const [firstElement, ...transformedElements] = elements.map((element) => {
     if (isValidElement(element)) {
       return element;
+    }
+    if ((element as DetailedFlatComponent).context) {
+      return (
+        <FlatDetailedContextWrapperComponent
+          //@ts-expect-error Element is checked for existing context field
+          component={element as DetailedFlatComponent}
+        />
+      );
     }
     return (
       <FlatDetailedWrapperComponent
@@ -34,16 +48,20 @@ export const FlatProvider: FC<FlatProviderPropsInterface> = ({
       />
     );
   });
+
+  let StructureNode: ReactElement = firstElement;
+  let InnerNode: ReactElement = StructureNode;
+
   transformedElements.forEach((FElement, index) => {
     StructureNode = cloneElement(
       StructureNode,
       {},
-      StructureNode
+      InnerNode === StructureNode
         ? FElement
         : cloneElement(
           InnerNode,
           {},
-          index + 1 === elements.length
+          index + 1 === transformedElements.length
             ? cloneElement(FElement, {}, children)
             : FElement,
         ),
@@ -51,6 +69,5 @@ export const FlatProvider: FC<FlatProviderPropsInterface> = ({
     InnerNode = FElement;
   });
 
-  //@ts-expect-error Expected for not to wrap in Fragment
   return StructureNode;
 };
