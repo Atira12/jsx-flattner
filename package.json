@@ -2,9 +2,11 @@
   "name": "flattner",
   "version": "0.0.1",
   "license": "MIT",
+  "main": "./index.js",
+  "typings": "./index.d.ts",
   "scripts": {
     "test": "node --experimental-vm-modules ./node_modules/.bin/jest",
-    "build": "tsc -p tsconfig.build.json && cp package.json ./dist",
+    "build": "tsc --declaration -p tsconfig.build.json && cp package.json ./dist",
     "pack": "npm pack ./dist "
   },
   "devDependencies": {

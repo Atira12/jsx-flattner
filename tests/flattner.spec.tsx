@@ -95,6 +95,45 @@ describe("FlatProvider tests", () => {
     expect(component).not.toBeNull();
     expect(component).toEqual(expected);
   });
+  it("when using standard provider and having children, should retain order and provide children even with a lot of providers", () => {
+    const component = FlatProvider({
+      elements: [
+        <ThirdProvider />,
+        <ThirdProvider />,
+        <ThirdProvider />,
+        <ThirdProvider />,
+        <ThirdProvider />,
+        <TestProvider />,
+        <SecondProvider />,
+        <ThirdProvider />,
+      ],
+
+      children: <TestProvider />,
+    });
+
+    const expected = (
+      <ThirdProvider>
+        <ThirdProvider>
+          <ThirdProvider>
+            <ThirdProvider>
+              <ThirdProvider>
+                <TestProvider>
+                  <SecondProvider>
+                    <ThirdProvider>
+                      <TestProvider />
+                    </ThirdProvider>
+                  </SecondProvider>
+                </TestProvider>
+              </ThirdProvider>
+            </ThirdProvider>
+          </ThirdProvider>
+        </ThirdProvider>
+      </ThirdProvider>
+    );
+
+    expect(component).not.toBeNull();
+    expect(component).toEqual(expected);
+  });
   it("when using detailed providers , should provide expected result", () => {
     const component = FlatProvider({
       elements: [detailedComponent, <SecondProvider />],
@@ -224,7 +263,6 @@ describe("FlatProvider tests", () => {
     expect(component1).toEqual(expected);
     expect(value1).not.toBeNull();
     expect(value1).toEqual({ value: 1 });
-    expect(value2).not.toBeNull();
-    expect(value2).toEqual({ value: 1 });
+    expect(value2).toEqual(value1);
   });
 });

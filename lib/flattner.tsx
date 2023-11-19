@@ -2,11 +2,16 @@ import {
   FC,
   PropsWithChildren,
   ReactElement,
+  ReactNode,
   cloneElement,
   isValidElement,
   useContext,
 } from "react";
-import { DetailedFlatComponent, FlatProviderPropsInterface } from "./types";
+import {
+  DetailedFlatComponent,
+  FlatComponent,
+  FlatProviderPropsInterface,
+} from "./types";
 
 export const FlatDetailedContextWrapperComponent: FC<
   PropsWithChildren & { component: Required<DetailedFlatComponent> }
@@ -25,11 +30,25 @@ export const FlatDetailedWrapperComponent: FC<
   return enabled() ? cloneElement(element, {}, children) : children;
 };
 
+const generateCurrentNode = (
+  [usedElement, ...passableElements]: ReactElement[],
+  children: ReactNode,
+): ReactNode => {
+  if (passableElements.length == 0) {
+    return cloneElement(usedElement, {}, children);
+  }
+  return cloneElement(
+    usedElement,
+    {},
+    generateCurrentNode(passableElements, children),
+  );
+};
+
 export const FlatProvider: FC<FlatProviderPropsInterface> = ({
   children,
   elements,
 }) => {
-  const [firstElement, ...transformedElements] = elements.map((element) => {
+  const transformedElements = elements.map((element) => {
     if (isValidElement(element)) {
       return element;
     }
@@ -48,25 +67,5 @@ export const FlatProvider: FC<FlatProviderPropsInterface> = ({
     );
   });
 
-  let StructureNode: ReactElement = firstElement;
-  let InnerNode: ReactElement = StructureNode;
-
-  transformedElements.forEach((FElement, index) => {
-    StructureNode = cloneElement(
-      StructureNode,
-      {},
-      InnerNode === StructureNode
-        ? FElement
-        : cloneElement(
-          InnerNode,
-          {},
-          index + 1 === transformedElements.length
-            ? cloneElement(FElement, {}, children)
-            : FElement,
-        ),
-    );
-    InnerNode = FElement;
-  });
-
-  return StructureNode;
+  return generateCurrentNode(transformedElements, children);
 };
