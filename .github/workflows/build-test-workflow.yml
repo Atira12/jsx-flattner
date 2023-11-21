@@ -7,11 +7,21 @@ on:
 
   pull_request:
 
+env:
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
 jobs:
   Build-and-Test:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - run: echo " //registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+      - run: echo "${NPM_TOKEN}"
       - run: npm ci
       - run: npm run test
       - run: npm run build
+      - if: github.event_name == 'push'
+        run: npm publish ./dist
