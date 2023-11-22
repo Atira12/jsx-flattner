@@ -7,11 +7,7 @@ import {
   isValidElement,
   useContext,
 } from "react";
-import {
-  DetailedFlatComponent,
-  FlatComponent,
-  FlatProviderPropsInterface,
-} from "./types";
+import { DetailedFlatComponent, FlatProviderPropsInterface } from "./types";
 
 export const FlatDetailedContextWrapperComponent: FC<
   PropsWithChildren & { component: Required<DetailedFlatComponent> }
@@ -44,6 +40,17 @@ const generateCurrentNode = (
   );
 };
 
+const cloneEnabledElement = (element: DetailedFlatComponent): ReactElement => {
+  if (element.context) {
+    return (
+      <FlatDetailedContextWrapperComponent
+        component={element as Required<DetailedFlatComponent>}
+      />
+    );
+  }
+  return <FlatDetailedWrapperComponent component={element} />;
+};
+
 export const FlatProvider: FC<FlatProviderPropsInterface> = ({
   children,
   elements,
@@ -52,19 +59,8 @@ export const FlatProvider: FC<FlatProviderPropsInterface> = ({
     if (isValidElement(element)) {
       return element;
     }
-    if ((element as DetailedFlatComponent).context) {
-      return (
-        <FlatDetailedContextWrapperComponent
-          //@ts-expect-error Element is checked for existing context field
-          component={element as DetailedFlatComponent}
-        />
-      );
-    }
-    return (
-      <FlatDetailedWrapperComponent
-        component={element as DetailedFlatComponent}
-      />
-    );
+
+    return cloneEnabledElement(element as DetailedFlatComponent);
   });
 
   return generateCurrentNode(transformedElements, children);
