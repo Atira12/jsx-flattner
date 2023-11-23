@@ -1,5 +1,5 @@
 name: Build & Test
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+run-name: JSX Flattner for React GitHub Actions 🚀
 on:
   push:
     branches:
@@ -19,7 +19,6 @@ jobs:
         with:
           node-version: 18
       - run: echo " //registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
-      - run: echo "${NPM_TOKEN}"
       - run: npm ci
       - run: npm run test
       - run: npm run build
