@@ -1,15 +1,20 @@
+
 # JSX Flattner
 
-## Description
+# Description
 
-Component flattner for dealing with React provider hell.
+JSX structure flattner for dealing with React pyramid of doom.
 
-Larger provider pyramids will can be hard to read, so "jsx-flattner" can be used to improve the code readability and structure.
-
-## Examples
+# Installation 
 
 ```
-// Provider Pyramid:
+npm install jsx-flattner
+```
+
+# Standard Component
+
+```
+// Pyramid of doom:
 
 return (
   <FirstProvider>
@@ -29,7 +34,7 @@ return (
      </FirstProvider>
 );
 
-// List of providers:
+// List of providers/components with children:
 
 const providerList = [
  <FirstProvider/>
@@ -48,67 +53,37 @@ const providerList = [
  );
 ```
 
-## Enabled Components
+# Detailed (Enabled) Components
 
-There is the option to provide for detailed components to the list which can be added in/removed from the React component tree.
-Depending on state changes or value of providers that have been created above the current component.
-Using the "context" option , the context value of a previously added provider (in the list) can be used to enable/disable the current detailed
-component;
+Components can be added to the list as a object type:
 
+- Permanently present components
 ```
-const providerList = [
- <FirstProvider/>,
- <SecondProvider/>,
- {
-   element:  <ThirdProvider/>,
-   enabled: ({enable }: firstProviderContextValue) =>  enable,
-   context: FirstProviderContext
- }
-
-]
-
- return (
- <FlatProvider elements={providerList}>
-    <Component/>
- </FlatProvider>
- );
+ const components = [
+  <PreviousContextProviderUsedInEnable/>
+  {
+   // element to be wrapped
+   element: <Component {...parameters}/>,
+   
+   // when should this element be available in the react structure
+   enabled: () => true, 
+  }
+ ]
 ```
 
-## Detailed Infromation
-
-Example Structure:
-
-- Flattner without detailed components
-  This will only nest each component in the previous one.
-
+- Conditionally present components
 ```
-  <FirstProvider>
-     <SecondProvider>
-        <ThirdProvider>
-           <ForthProvider>
-                 <Component/>
-           </ForthProvider>
-        </ThirdProvider>
-      </SecondProvider>
-  </FirstProvider>
-```
+ const components = [
+  <PreviousContextProviderUsedInEnable/>
+  {
+   // element to be wrapped
+   element: <Component {...parameters}/>,
+   
+   // when should this element be available in the react structure
+   enabled: (prevContextValue) => prevContextValue.checkState, 
 
-- Flattner with detailed components
-  For each detailed component there will be created a FlatWrapperComponent which will allow to enable/disable the component depending on
-  state change.
-
-```
-  <FirstProvider>
-    <FlatWrapperComponent>
-     <SecondProvider>
-      <FlatWrapperComponent>
-        <ThirdProvider>
-           <ForthProvider>
-                 <Component/>
-           </ForthProvider>
-        </ThirdProvider>
-      </FlatWrapperComponent>
-      </SecondProvider>
-    </FlatWrapperComponent>
-  </FirstProvider>
+   // Context of previously added Provider
+   context: PreviousContextProviderUsedInEnable
+  }
+ ]
 ```
