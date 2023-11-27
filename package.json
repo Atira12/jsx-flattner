@@ -2,8 +2,11 @@
   "name": "jsx-flattner",
   "version": "0.0.3",
   "license": "MIT",
-  "main": "./index.js",
-  "typings": "./index.d.ts",
+  "description": "Flattner for React pyramid of doom",
+  "author": "Atira12",
+  "repository": "Atira12/jsx-flattner",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
   "scripts": {
     "test": "node --experimental-vm-modules ./node_modules/.bin/jest",
     "build": "tsc --declaration -p tsconfig.build.json && cp package.json ./dist",
@@ -28,5 +31,15 @@
     "typescript": "^5.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
-  }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "package.json"
+  ],
+  "keywords": [
+    "react",
+    "typescript",
+    "npm"
+  ]
 }
