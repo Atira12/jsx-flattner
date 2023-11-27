@@ -9,7 +9,7 @@
   "typings": "./dist/index.d.ts",
   "scripts": {
     "test": "node --experimental-vm-modules ./node_modules/.bin/jest",
-    "build": "tsc --declaration -p tsconfig.build.json && cp package.json ./dist",
+    "build": "tsc --declaration -p tsconfig.build.json",
     "build:full": " npm run build && npm pack ./dist"
   },
   "devDependencies": {
